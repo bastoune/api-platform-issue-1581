@@ -13,3 +13,6 @@
 
 ### Step 2 - Run
 - `docker-compose up -d`
+
+### Step 3 - Reproduce the bug
+- `docker-compose exec app php bin/console debug:router | grep api_organizations_users_get_subresource`
