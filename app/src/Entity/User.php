@@ -2,27 +2,31 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * @ORM\Table(name="`user`")
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ *
  * @ApiResource(
- *     subresourceOperations={
- *          "api_organizations_users_get_subresource"={
- *              "method"="GET",
- *              "path"="/BLABLABLA/{organization_id}/users",
- *              "requirements"={"organization_id": ".+"},
- *              "security"="is_granted('readOrganization', organization_id)"
+ *     collectionOperations={
+ *          "post",
+ *          "working": {
+ *              "method": "GET",
+ *              "path": "/another_prefix/{a_param}/users",
  *          }
- *      })
+ *     }
+ *     )
  */
 class User implements UserInterface
 {
     /**
      * @ORM\Id()
+     * @ApiProperty(identifier=true)
      * @ORM\GeneratedValue(strategy="UUID")
      * @ORM\Column(name="id", type="guid", unique=true)
      */
@@ -40,21 +44,8 @@ class User implements UserInterface
      */
     private $password;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Organization", inversedBy="users")
-     * @ORM\JoinColumn(name="organization_id", referencedColumnName="id", nullable=true)
-     */
-    private $organization;
 
-    /**
-     * User constructor.
-     */
-    public function __construct()
-    {
-        $this->apps = new ArrayCollection();
-    }
-
-    public function getId(): string
+    public function getId()
     {
         return $this->id;
     }
@@ -67,18 +58,6 @@ class User implements UserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
-
-        return $this;
-    }
-
-    public function getOrganization(): Organization
-    {
-        return $this->organization;
-    }
-
-    public function setOrganization(Organization $organization): self
-    {
-        $this->organization = $organization;
 
         return $this;
     }
